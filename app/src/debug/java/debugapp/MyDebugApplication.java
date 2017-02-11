@@ -18,5 +18,11 @@ public class MyDebugApplication extends XiayuApplication{
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                         .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                         .build());
+
+        //注意:下面这段话是为okhttpclient配置拦截器,只有用这个okhttpclient请求数据才能被拦截
+        //目前这个demo没有使用网络请求,所以我这里就注释掉了
+        /*OkHttpClient client = new OkHttpClient.Builder()
+             .addNetworkInterceptor(new StethoInterceptor())
+             .build();*/
     }
 }
