@@ -26,12 +26,12 @@ compile 'com.facebook.stetho:stetho-urlconnection:1.3.1'
 	                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
 	                        .build());
 	        
-		        //注意:下面这段话是为okhttpclient配置拦截器,只有用这个okhttpclient请求数据才能被拦截
-		        //目前这个demo没有使用网络请求,所以我这里就注释掉了                
-	/*OkHttpClient client = new OkHttpClient.Builder()
-	             .addNetworkInterceptor(new StethoInterceptor())
-	             .build();*/
-		    }
+        //注意:下面这段话是为okhttpclient配置拦截器,只有用这个okhttpclient请求数据才能被拦截
+        OkHttpClient client = new OkHttpClient.Builder()
+             .addNetworkInterceptor(new StethoInterceptor())//添加Stetho的拦截器
+             .build();
+        //使用自定义的OkHttpClient
+        OkHttpUtils.initClient(client);
 
 ##1.3模拟网络请求代码,数据库使用等代码
 **这里指贴出SharedPreferences模拟代码**
@@ -49,6 +49,27 @@ compile 'com.facebook.stetho:stetho-urlconnection:1.3.1'
 	        edit.commit();
 	    }
 	}
+**这里贴出网络请求模拟代码(这里用的是Okhttputils模拟网络请求,记得要初始化,初始化方法在上面的XiayuApplication 代码中有)**
+
+    public void net(View v) {
+        OkHttpUtils.get()
+                .url("https://api.douban.com/v2/movie/top250")
+                .addParams("start","0")
+                .addParams("count","10")
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                System.out.println("请求失败");
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                tv.setText(response);
+                System.out.println("请求成功");
+            }
+        });
+
+    }
  
 ##1.4使用Stetho进入调试
 **在Chrome浏览器中输入 chrome://inspect/#devices**
@@ -61,7 +82,7 @@ compile 'com.facebook.stetho:stetho-urlconnection:1.3.1'
 
 ![这里写图片描述](http://img.blog.csdn.net/20170211104312925)
 
-**在Network这里能够看到http请求(这个demo里面没有调用http请求,所以看不到拦截)**
+**在Network这里能够看到http请求**
 
 ![这里写图片描述](http://img.blog.csdn.net/20170211105111437)
 
@@ -117,3 +138,5 @@ compile 'com.facebook.stetho:stetho-urlconnection:1.3.1'
 
 #3.[项目DEMO源码](https://github.com/yulyu2008/StethoDemo)
 https://github.com/yulyu2008/StethoDemo
+
+**注意:如果你能够看到你的项目,但是点击inspect后弹出的窗口一直显示空白的话,可能你的调试被拦截了,这个情况需要开启vpn才能够调试(如果自己没有vpn,可以考虑使用免费的vpn蓝灯--lantern,这里就不介绍怎么使用vpn了)**
