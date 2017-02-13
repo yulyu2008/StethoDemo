@@ -2,7 +2,11 @@ package debugapp;
 
 
 import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.xiayu.stethodemo.XiayuApplication;
+import com.zhy.http.okhttp.OkHttpUtils;
+
+import okhttp3.OkHttpClient;
 
 /**
  * 创建者     罗夏雨
@@ -20,9 +24,10 @@ public class MyDebugApplication extends XiayuApplication{
                         .build());
 
         //注意:下面这段话是为okhttpclient配置拦截器,只有用这个okhttpclient请求数据才能被拦截
-        //目前这个demo没有使用网络请求,所以我这里就注释掉了
-        /*OkHttpClient client = new OkHttpClient.Builder()
-             .addNetworkInterceptor(new StethoInterceptor())
-             .build();*/
+        OkHttpClient client = new OkHttpClient.Builder()
+             .addNetworkInterceptor(new StethoInterceptor())//添加Stetho的拦截器
+             .build();
+        //使用自定义的OkHttpClient
+        OkHttpUtils.initClient(client);
     }
 }
